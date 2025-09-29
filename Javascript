@@ -1,0 +1,42 @@
+// --- JAVASCRIPT UPDATE ---
+
+// Fetches and updates the metrics every 2 seconds
+async function fetchMetrics() {
+    try {
+        const response = await fetch('/metrics');
+        const data = await response.json();
+        
+        document.getElementById('aura-status').textContent = data.Aura_Status;
+        document.getElementById('jeong-count').textContent = data.Jeong_Active_Users;
+        // Updated to use the refined Nunchi data structure
+        document.getElementById('nunchi-score').textContent = data.Nunchi_AHI.nunchi_score;
+        document.getElementById('load-percent').textContent = data.Nunchi_AHI.current_load + '% (Vol: ' + data.Nunchi_AHI.volatility + ')'; 
+        // NEW: Update Han Score
+        document.getElementById('han-score').textContent = data.Global_Han_Score;
+    } catch (error) {
+        document.getElementById('aura-status').textContent = 'CONNECTION LOST';
+        console.error('Error fetching metrics:', error);
+    }
+}
+
+// Simulates a new user connection (for Jeong)
+async function simulateConnection() {
+    await fetch('/connect', { method: 'POST' });
+    fetchMetrics(); 
+}
+
+// NEW: Function to simulate contributing an Act of Resilience (for Han)
+async function contributeHan() {
+    try {
+        const response = await fetch('/han/contribute', { method: 'POST' });
+        const data = await response.json();
+        alert('Resilience Logged! New Han Score: ' + data.new_han_score);
+        fetchMetrics();
+    } catch (error) {
+        console.error('Error contributing to Han:', error);
+    }
+}
+
+// Start the continuous monitoring
+fetchMetrics(); 
+setInterval(fetchMetrics, 2000); 
