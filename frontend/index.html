@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>The Living Aura: Core Lattice Status</title>
+    <style>
+        body { font-family: 'Courier New', monospace; background-color: #1a1a2e; color: #e94560; text-align: center; padding: 50px; }
+        .aura { border: 2px solid #53a8b6; padding: 20px; margin: 20px auto; max-width: 600px; background-color: #0f3460; box-shadow: 0 0 15px #e94560; }
+        h1 { color: #53a8b6; }
+        p { font-size: 1.2em; }
+        .score { font-weight: bold; color: #bae8e8; }
+    </style>
+</head>
+<body>
+    <div class="aura">
+        <h1>LIVING AURA STATUS</h1>
+        <h2 id="aura-status">Initializing...</h2>
+        <p>Jeong (Active Users): <span id="jeong-count" class="score">0</span></p>
+        <p>Nunchi (Harmony Index): <span id="nunchi-score" class="score">0</span></p>
+        <p>Server Load: <span id="load-percent" class="score">0%</span></p>
+        <button onclick="simulateConnection()">Simulate Connection (Boost Jeong)</button>
+        <p>Last Update: <span id="timestamp"></span></p>
+    </div>
+
+    <script>
+        // Fetches and updates the metrics every 2 seconds
+        async function fetchMetrics() {
+            try {
+                const response = await fetch('/metrics');
+                const data = await response.json();
+                
+                document.getElementById('aura-status').textContent = data.Aura_Status;
+                document.getElementById('jeong-count').textContent = data.Jeong_Active_Users;
+                document.getElementById('nunchi-score').textContent = data.Nunchi_AHI.nunchi_score;
+                document.getElementById('load-percent').textContent = data.Nunchi_AHI.load_percent + '%';
+                document.getElementById('timestamp').textContent = new Date(data.timestamp * 1000).toLocaleTimeString();
+            } catch (error) {
+                document.getElementById('aura-status').textContent = 'CONNECTION LOST';
+                console.error('Error fetching metrics:', error);
+            }
+        }
+
+        // Simulates a new user connection to test the Jeong metric
+        async function simulateConnection() {
+            await fetch('/connect', { method: 'POST' });
+            fetchMetrics(); // Refresh display after connecting
+        }
+
+        // Start the continuous monitoring
+        fetchMetrics(); 
+        setInterval(fetchMetrics, 2000); 
+    </script>
+</body>
+</html>
