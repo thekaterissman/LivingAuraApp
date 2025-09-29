@@ -1,0 +1,234 @@
+# backend/server.py (Fully Integrated and Detailed)
+from flask import Flask, jsonify, request
+import time
+import os
+import random
+import uuid # For unique user IDs
+import threading # To simulate real-time systems
+
+app = Flask(__name__)
+
+# --- CORE LATTICE DATA STORES (Simulated for Fast Deployment) ---
+ACTIVE_USERS = set()
+GLOBAL_HAN_SCORE = 4096 # Starting score for Han Ledger
+SYSTEM_LOAD_HISTORY = [50.0] * 10 # History for Nunchi Stability Check
+
+# Function to simulate continuous Nunchi calculation
+def continuous_nunchi_simulation():
+    """Simulates real-time system performance data."""
+    # This thread periodically updates the SYSTEM_LOAD_HISTORY
+    while True:
+        # Simulate slight server load changes
+        new_load = SYSTEM_LOAD_HISTORY[-1] + random.uniform(-1.5, 1.5)
+        # Keep load within a plausible range (30-70 for "harmony")
+        new_load = max(30.0, min(70.0, new_load))
+        
+        SYSTEM_LOAD_HISTORY.append(new_load)
+        if len(SYSTEM_LOAD_HISTORY) > 10:
+            SYSTEM_LOAD_HISTORY.pop(0) # Keep history concise
+        time.sleep(1) # Update every second
+
+# Start the background Nunchi thread immediately
+threading.Thread(target=continuous_nunchi_simulation, daemon=True).start()
+
+# --- CORE LATTICE METRIC CALCULATIONS ---
+
+# J: Jeong Matrix (Deep Connection & Loyalty)
+def calculate_jeong_connection():
+    """Returns the total number of unique active connections."""
+    return len(ACTIVE_USERS)
+
+# N: Nunchi Stream (Ambient Harmony Index - AHI)
+def calculate_nunchi_ahi():
+    """Calculates AHI based on system stability (Nunchi) and connection (Jeong)."""
+    
+    # 1. System Stability (Standard Deviation of recent load)
+    std_dev = (sum((x - sum(SYSTEM_LOAD_HISTORY)/len(SYSTEM_LOAD_HISTORY))**2 for x in SYSTEM_LOAD_HISTORY) / len(SYSTEM_LOAD_HISTORY))**0.5
+    
+    # Nunchi is inversely proportional to volatility (lower std_dev = higher Nunchi)
+    stability_score = max(0, 100 - (std_dev * 15)) 
+    
+    # 2. Final AHI (Weighted Blend, reflecting Core Lattice philosophy)
+    # AHI = 80% Stability + 20% Connection
+    jeong_weight = calculate_jeong_connection() / 100.0 # Normalize Jeong score
+    
+    nunchi_score = round((0.80 * stability_score) + (0.20 * min(100, jeong_weight * 10)), 2)
+    
+    return {
+        "current_load": round(SYSTEM_LOAD_HISTORY[-1], 2),
+        "nunchi_score": max(0, nunchi_score),
+        "volatility": round(std_dev, 2)
+    }
+
+# H: Han Ledger (Collective Resilience Mechanism)
+def get_han_score():
+    """Retrieves the total, immutable Han Score."""
+    global GLOBAL_HAN_SCORE
+    return GLOBAL_HAN_SCORE
+
+def contribute_to_han(amount=1):
+    """Simulates adding an immutable transaction to the Ledger."""
+    global GLOBAL_HAN_SCORE
+    # In a DLT, this would be a secure, validated transaction.
+    GLOBAL_HAN_SCORE += amount
+    print(f"Han Ledger updated. New score: {GLOBAL_HAN_SCORE}")
+    return GLOBAL_HAN_SCORE
+
+# --- API ENDPOINTS ---
+
+@app.route('/', methods=['GET'])
+def home_page():
+    try:
+        # Note: index.html is copied to the root by the Dockerfile, so we access it directly
+        with open('index.html', 'r') as f:
+            return f.read()
+    except FileNotFoundError:
+        return "Living Aura App: Status Page Unavailable. Core Logic is Running.", 500
+
+@app.route('/metrics', methods=['GET'])
+def get_metrics():
+    nunchi_data = calculate_nunchi_ahi()
+    jeong_count = calculate_jeong_connection()
+    han_score = get_han_score()
+    
+    # Determine the overall resonance status based on Nunchi
+    status = "Resonant Harmony" if nunchi_data['nunchi_score'] > 75 else "Stable" if nunchi_data['nunchi_score'] > 50 else "Seeking Resonance"
+
+    aura_data = {
+        "timestamp": int(time.time()),
+        "Aura_Status": status,
+        "Jeong_Active_Users": jeong_count,
+        "Nunchi_AHI": nunchi_data,
+        "Global_Han_Score": han_score
+    }
+    return jsonify(aura_data)
+
+@app.route('/connect', methods=['POST'])
+def register_user():
+    """Simulates a user connection."""
+    user_id = request.remote_addr + str(uuid.uuid4()) # Unique ID
+    ACTIVE_USERS.add(user_id)
+    return jsonify({"message": f"New connection established. Jeong score updated."})
+
+@app.route('/han/contribute', methods=['POST'])
+def handle_han_contribution():
+    """Endpoint for a user to contribute to the Han Ledger."""
+    new_score = contribute_to_han(amount=10) # A single contribution adds 10 points
+    return jsonify({"message": "Act of Resilience logged.", "new_han_score": new_score})
+# backend/server.py (Fully Integrated and Detailed)
+from flask import Flask, jsonify, request
+import time
+import os
+import random
+import uuid # For unique user IDs
+import threading # To simulate real-time systems
+
+app = Flask(__name__)
+
+# --- CORE LATTICE DATA STORES (Simulated for Fast Deployment) ---
+ACTIVE_USERS = set()
+GLOBAL_HAN_SCORE = 4096 # Starting score for Han Ledger
+SYSTEM_LOAD_HISTORY = [50.0] * 10 # History for Nunchi Stability Check
+
+# Function to simulate continuous Nunchi calculation
+def continuous_nunchi_simulation():
+    """Simulates real-time system performance data."""
+    # This thread periodically updates the SYSTEM_LOAD_HISTORY
+    while True:
+        # Simulate slight server load changes
+        new_load = SYSTEM_LOAD_HISTORY[-1] + random.uniform(-1.5, 1.5)
+        # Keep load within a plausible range (30-70 for "harmony")
+        new_load = max(30.0, min(70.0, new_load))
+        
+        SYSTEM_LOAD_HISTORY.append(new_load)
+        if len(SYSTEM_LOAD_HISTORY) > 10:
+            SYSTEM_LOAD_HISTORY.pop(0) # Keep history concise
+        time.sleep(1) # Update every second
+
+# Start the background Nunchi thread immediately
+threading.Thread(target=continuous_nunchi_simulation, daemon=True).start()
+
+# --- CORE LATTICE METRIC CALCULATIONS ---
+
+# J: Jeong Matrix (Deep Connection & Loyalty)
+def calculate_jeong_connection():
+    """Returns the total number of unique active connections."""
+    return len(ACTIVE_USERS)
+
+# N: Nunchi Stream (Ambient Harmony Index - AHI)
+def calculate_nunchi_ahi():
+    """Calculates AHI based on system stability (Nunchi) and connection (Jeong)."""
+    
+    # 1. System Stability (Standard Deviation of recent load)
+    std_dev = (sum((x - sum(SYSTEM_LOAD_HISTORY)/len(SYSTEM_LOAD_HISTORY))**2 for x in SYSTEM_LOAD_HISTORY) / len(SYSTEM_LOAD_HISTORY))**0.5
+    
+    # Nunchi is inversely proportional to volatility (lower std_dev = higher Nunchi)
+    stability_score = max(0, 100 - (std_dev * 15)) 
+    
+    # 2. Final AHI (Weighted Blend, reflecting Core Lattice philosophy)
+    # AHI = 80% Stability + 20% Connection
+    jeong_weight = calculate_jeong_connection() / 100.0 # Normalize Jeong score
+    
+    nunchi_score = round((0.80 * stability_score) + (0.20 * min(100, jeong_weight * 10)), 2)
+    
+    return {
+        "current_load": round(SYSTEM_LOAD_HISTORY[-1], 2),
+        "nunchi_score": max(0, nunchi_score),
+        "volatility": round(std_dev, 2)
+    }
+
+# H: Han Ledger (Collective Resilience Mechanism)
+def get_han_score():
+    """Retrieves the total, immutable Han Score."""
+    global GLOBAL_HAN_SCORE
+    return GLOBAL_HAN_SCORE
+
+def contribute_to_han(amount=1):
+    """Simulates adding an immutable transaction to the Ledger."""
+    global GLOBAL_HAN_SCORE
+    # In a DLT, this would be a secure, validated transaction.
+    GLOBAL_HAN_SCORE += amount
+    print(f"Han Ledger updated. New score: {GLOBAL_HAN_SCORE}")
+    return GLOBAL_HAN_SCORE
+
+# --- API ENDPOINTS ---
+
+@app.route('/', methods=['GET'])
+def home_page():
+    try:
+        # Note: index.html is copied to the root by the Dockerfile, so we access it directly
+        with open('index.html', 'r') as f:
+            return f.read()
+    except FileNotFoundError:
+        return "Living Aura App: Status Page Unavailable. Core Logic is Running.", 500
+
+@app.route('/metrics', methods=['GET'])
+def get_metrics():
+    nunchi_data = calculate_nunchi_ahi()
+    jeong_count = calculate_jeong_connection()
+    han_score = get_han_score()
+    
+    # Determine the overall resonance status based on Nunchi
+    status = "Resonant Harmony" if nunchi_data['nunchi_score'] > 75 else "Stable" if nunchi_data['nunchi_score'] > 50 else "Seeking Resonance"
+
+    aura_data = {
+        "timestamp": int(time.time()),
+        "Aura_Status": status,
+        "Jeong_Active_Users": jeong_count,
+        "Nunchi_AHI": nunchi_data,
+        "Global_Han_Score": han_score
+    }
+    return jsonify(aura_data)
+
+@app.route('/connect', methods=['POST'])
+def register_user():
+    """Simulates a user connection."""
+    user_id = request.remote_addr + str(uuid.uuid4()) # Unique ID
+    ACTIVE_USERS.add(user_id)
+    return jsonify({"message": f"New connection established. Jeong score updated."})
+
+@app.route('/han/contribute', methods=['POST'])
+def handle_han_contribution():
+    """Endpoint for a user to contribute to the Han Ledger."""
+    new_score = contribute_to_han(amount=10) # A single contribution adds 10 points
+    return jsonify({"message": "Act of Resilience logged.", "new_han_score": new_score})
