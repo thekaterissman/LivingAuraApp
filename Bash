@@ -1,0 +1,1 @@
+git commit -m "Genesis: Deployable Core Lattice MVP with minimal Nunchi and Jeong metrics"
